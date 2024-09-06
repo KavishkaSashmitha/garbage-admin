@@ -1,19 +1,41 @@
 import express from 'express';
-import { initializeApp, applicationDefault, cert } from 'firebase-admin/app';
-import { getFirestore } from 'firebase-admin/firestore';
-import CryptoJS from 'crypto-js';
+import { initializeApp, cert } from 'firebase-admin/app';
+import { getFirestore, Timestamp } from 'firebase-admin/firestore';
+import multer from 'multer';
+import cors from 'cors';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { v4 as uuidv4 } from 'uuid';
+import { Storage } from '@google-cloud/storage';
 import serviceAccount from './servicekry.json' assert { type: 'json' };
 
 const app = express();
 const port = 3000;
+app.use(cors());
 
-// Initialize the Firebase Admin SDK
+// Initialize Firebase Admin SDK
 initializeApp({
   credential: cert(serviceAccount),
-  databaseURL: 'https://garbage-app-50318-default-rtdb.firebaseio.com',
+  storageBucket: 'your-project-id.appspot.com', // Replace with your Firebase Storage bucket name
 });
 
-const db = getFirestore(); // Use this for Firestore
+const db = getFirestore(); // Firestore
+
+// Initialize Google Cloud Storage
+const storage = new Storage({
+  keyFilename: './servicekry.json', // Path to your service account key file
+});
+const bucket = storage.bucket('your-project-id.appspot.com'); // Replace with your Firebase Storage bucket name
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Multer setup for file uploads
+const storageEngine = multer.memoryStorage();
+const upload = multer({ storage: storageEngine });
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 app.get('/', (req, res) => {
   res.send('Hello');
@@ -60,6 +82,54 @@ app.get('/user/:userId', async (req, res) => {
   } catch (error) {
     console.error('Error fetching user data:', error);
     res.status(500).send('Internal Server Error');
+  }
+});
+
+// Route to handle contest data
+app.post('/contests', upload.single('image'), async (req, res) => {
+  const { name, description } = req.body;
+  const image = req.file;
+
+  try {
+    let imageUrl = null;
+
+    if (image) {
+      const fileName = `${uuidv4()}${path.extname(image.originalname)}`;
+      const file = bucket.file(fileName);
+
+      await new Promise((resolve, reject) => {
+        const stream = file.createWriteStream({
+          metadata: {
+            contentType: image.mimetype,
+          },
+        });
+
+        stream.on('error', (err) => {
+          reject(err);
+        });
+
+        stream.on('finish', () => {
+          resolve();
+        });
+
+        stream.end(image.buffer);
+      });
+
+      imageUrl = `https://storage.googleapis.com/${bucket.name}/${fileName}`;
+    }
+
+    // Store contest data in Firestore
+    await db.collection('contests').add({
+      name,
+      description,
+      imageUrl,
+      createdAt: Timestamp.now(),
+    });
+
+    res.status(200).json({ message: 'Contest added successfully!' });
+  } catch (error) {
+    console.error('Error adding contest:', error);
+    res.status(500).json({ error: 'Failed to add contest' });
   }
 });
 

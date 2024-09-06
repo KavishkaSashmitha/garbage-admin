@@ -101,7 +101,7 @@ const Navbar = () => {
       <List>
         {['Contests', 'Users', 'Feedback'].map((text, index) => (
           <ListItem key={text} disablePadding>
-            <ListItemButton>
+            <ListItemButton component={Link} to={`/${text.toLowerCase()}`}>
               <ListItemIcon>
                 {index % 2 === 0 ? (
                   <InboxIcon sx={{ color: '#FFFFFF' }} />
