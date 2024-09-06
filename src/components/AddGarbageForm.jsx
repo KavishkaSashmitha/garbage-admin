@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
-import { TextField, Button, Box, MenuItem, Typography } from '@mui/material';
+import React, { useState } from "react";
+import { TextField, Button, Box, MenuItem, Typography } from "@mui/material";
+import axios from "axios";
 
 const AddGarbageForm = () => {
   const [formData, setFormData] = useState({
-    truckNumber: '',
-    route: '',
-    date: '',
+    truckNumber: "",
+    route: "",
+    date: "",
   });
 
   const handleChange = (event) => {
@@ -15,22 +16,25 @@ const AddGarbageForm = () => {
     });
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    // Handle the form submission logic here
-    console.log(formData);
+    try {
+      await axios.post("http://localhost:4000/add-route", formData);
+    } catch (error) {
+      console.error("Error adding route:", error);
+    }
   };
 
   return (
     <Box
       sx={{
-        width: '100%',
+        width: "100%",
         maxWidth: 500,
-        bgcolor: 'background.paper',
+        bgcolor: "background.paper",
         p: 4,
         borderRadius: 1,
-        display: 'flex',
-        flexDirection: 'column',
+        display: "flex",
+        flexDirection: "column",
         gap: 2,
       }}
     >
