@@ -1,10 +1,11 @@
 import React from 'react';
+import AddGarbageForm from '../components/AddGarbageForm';
 
 function adminroutes() {
   return (
     <div>
       <h1>Admin Routes</h1>
-      <p>These are the admin routes</p>
+      <AddGarbageForm /> {/* Render the form here */}
     </div>
   );
 }
