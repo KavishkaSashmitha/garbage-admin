@@ -99,7 +99,7 @@ const Navbar = () => {
       </List>
       <Divider />
       <List>
-        {['All mail', 'Trash', 'Spam'].map((text, index) => (
+        {['Contests', 'Users', 'Feedback'].map((text, index) => (
           <ListItem key={text} disablePadding>
             <ListItemButton>
               <ListItemIcon>
@@ -132,7 +132,7 @@ const Navbar = () => {
               <MenuIcon />
             </IconButton>
             <Typography variant="h6" sx={{ flexGrow: 1 }}>
-              MUI Navbar
+              Municiple Waste Management
             </Typography>
             <IconButton onClick={handleMenuClick}>
               <Avatar
