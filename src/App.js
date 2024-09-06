@@ -8,6 +8,7 @@ import adminroutes from './pages/admin-routes';
 import PointsAdd from './pages/pointsAdd';
 import Navbar from './components/navbar';
 import addEvents from './pages/addEvents';
+import ContestList from './pages/allEvents';
 
 function App() {
   return (
@@ -15,7 +16,7 @@ function App() {
       <Navbar />
       <Routes>
         <Route path="/inbox" Component={adminroutes} />{' '}
-        <Route path="/contests" Component={addEvents} />{' '}
+        <Route path="/contests" Component={ContestList} />{' '}
         <Route path="/points-add/:id" element={<PointsAdd />} />
         {/* 👈 Renders at /app/ */}
       </Routes>

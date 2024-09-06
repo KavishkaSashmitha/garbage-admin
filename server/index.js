@@ -7,25 +7,28 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { v4 as uuidv4 } from 'uuid';
 import { Storage } from '@google-cloud/storage';
+import dotenv from 'dotenv';
 import serviceAccount from './servicekry.json' assert { type: 'json' };
 
+dotenv.config(); // Load environment variables from .env file
+
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 app.use(cors());
 
 // Initialize Firebase Admin SDK
 initializeApp({
   credential: cert(serviceAccount),
-  storageBucket: 'your-project-id.appspot.com', // Replace with your Firebase Storage bucket name
+  storageBucket: process.env.FIREBASE_STORAGE_BUCKET, // Use environment variable for bucket name
 });
 
 const db = getFirestore(); // Firestore
 
 // Initialize Google Cloud Storage
 const storage = new Storage({
-  keyFilename: './servicekry.json', // Path to your service account key file
+  keyFilename: path.resolve('./servicekry.json'), // Use path.resolve for better path handling
 });
-const bucket = storage.bucket('your-project-id.appspot.com'); // Replace with your Firebase Storage bucket name
+const bucket = storage.bucket(process.env.FIREBASE_STORAGE_BUCKET); // Use environment variable for bucket name
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -90,6 +93,10 @@ app.post('/contests', upload.single('image'), async (req, res) => {
   const { name, description } = req.body;
   const image = req.file;
 
+  if (!name || !description) {
+    return res.status(400).json({ error: 'Name and description are required' });
+  }
+
   try {
     let imageUrl = null;
 
@@ -130,6 +137,24 @@ app.post('/contests', upload.single('image'), async (req, res) => {
   } catch (error) {
     console.error('Error adding contest:', error);
     res.status(500).json({ error: 'Failed to add contest' });
+  }
+});
+app.get('/contests', async (req, res) => {
+  try {
+    const contestsRef = db.collection('contests');
+    const snapshot = await contestsRef.get();
+    if (snapshot.empty) {
+      return res.status(404).json({ message: 'No contests found' });
+    }
+
+    const contests = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    res.json(contests);
+  } catch (error) {
+    console.error('Error fetching contests:', error);
+    res.status(500).json({ error: 'Failed to fetch contests' });
   }
 });
 
