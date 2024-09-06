@@ -16,8 +16,9 @@ function App() {
       <Navbar />
       <Routes>
         <Route path="/inbox" Component={adminroutes} />{' '}
-        <Route path="/contests" Component={ContestList} />{' '}
         <Route path="/points-add/:id" element={<PointsAdd />} />
+        <Route path="/contests" Component={ContestList} />{' '}
+        <Route path="/add-contest" Component={addEvents} />{' '}
         {/* 👈 Renders at /app/ */}
       </Routes>
     </BrowserRouter>
