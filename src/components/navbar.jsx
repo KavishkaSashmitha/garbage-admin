@@ -115,8 +115,26 @@ export default function TemporaryDrawer() {
             flexGrow: 1,
           }}
         >
-          <Typography sx={{ minWidth: 100 }}>Contact</Typography>
-          <Typography sx={{ minWidth: 100 }}>Profile</Typography>
+          <Typography
+            sx={{ minWidth: 100 }}
+            component={Link}
+            to="/points"
+            style={{
+              textDecoration: 'none',
+              color: 'inherit',
+              hover: '#FFE5CF',
+            }}
+          >
+            Points Add
+          </Typography>
+          <Typography
+            sx={{ minWidth: 100 }}
+            component={Link}
+            to="/users"
+            style={{ textDecoration: 'none', color: 'inherit' }}
+          >
+            Users
+          </Typography>
         </Box>
 
         {/* Right corner: Profile menu */}
