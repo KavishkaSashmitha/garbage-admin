@@ -5,12 +5,18 @@ import TemporaryDrawer from "./components/drawer";
 import AccountMenu from "./components/navbar";
 import adminroutes from "./pages/admin-routes";
 
+import PointsAdd from './pages/pointsAdd';
+import Navbar from './components/navbar';
+
 function App() {
   return (
     <BrowserRouter>
-      <AccountMenu />
+      <Navbar />
       <Routes>
-        <Route path="/inbox" Component={adminroutes} />{" "}
+
+        <Route path="/inbox" Component={adminroutes} />{' '}
+        <Route path="/points-add/:id" element={<PointsAdd />} />
+
         {/* 👈 Renders at /app/ */}
       </Routes>
     </BrowserRouter>
