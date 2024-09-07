@@ -1,27 +1,33 @@
 import React, { useState } from "react";
-import { TextField, Button, Box, MenuItem, Typography } from "@mui/material";
+import { TextField, Button, Box, Typography } from "@mui/material";
 import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const AddGarbageForm = () => {
   const [formData, setFormData] = useState({
     truckNumber: "",
-    route: "",
+    routeStart: "",
+    routeEnd: "",
     date: "",
   });
 
   const [errors, setErrors] = useState({
     truckNumber: "",
-    route: "",
+    routeStart: "",
+    routeEnd: "",
     date: "",
   });
 
-  const today = new Date().toISOString().split("T")[0];
-
   const validate = () => {
-    let tempErrors = { truckNumber: "", route: "", date: "" };
+    let tempErrors = {
+      truckNumber: "",
+      routeStart: "",
+      routeEnd: "",
+      date: "",
+    };
     let isValid = true;
 
-    // Truck Number Validation
     if (!formData.truckNumber) {
       tempErrors.truckNumber = "Truck number is required.";
       isValid = false;
@@ -30,13 +36,16 @@ const AddGarbageForm = () => {
       isValid = false;
     }
 
-    // Route Validation
-    if (!formData.route) {
-      tempErrors.route = "Route is required.";
+    if (!formData.routeStart) {
+      tempErrors.routeStart = "Route Start is required.";
       isValid = false;
     }
 
-    // Date Validation
+    if (!formData.routeEnd) {
+      tempErrors.routeEnd = "Route End is required.";
+      isValid = false;
+    }
+
     if (!formData.date) {
       tempErrors.date = "Date is required.";
       isValid = false;
@@ -59,9 +68,13 @@ const AddGarbageForm = () => {
     if (validate()) {
       try {
         await axios.post("http://localhost:4000/add-route", formData);
+        toast.success("Route added successfully!");
       } catch (error) {
+        toast.error("Error adding route. Please try again.");
         console.error("Error adding route:", error);
       }
+    } else {
+      toast.warn("Please correct the errors before submitting.");
     }
   };
 
@@ -104,14 +117,24 @@ const AddGarbageForm = () => {
           helperText={errors.truckNumber}
         />
         <TextField
-          label="Route"
-          name="route"
-          value={formData.route}
+          label="Route Start"
+          name="routeStart"
+          value={formData.routeStart}
           onChange={handleChange}
           fullWidth
           variant="outlined"
-          error={!!errors.route}
-          helperText={errors.route}
+          error={!!errors.routeStart}
+          helperText={errors.routeStart}
+        />
+        <TextField
+          label="Route End"
+          name="routeEnd"
+          value={formData.routeEnd}
+          onChange={handleChange}
+          fullWidth
+          variant="outlined"
+          error={!!errors.routeEnd}
+          helperText={errors.routeEnd}
         />
         <TextField
           label="Date"
@@ -131,6 +154,7 @@ const AddGarbageForm = () => {
           Submit
         </Button>
       </Box>
+      <ToastContainer />
     </Box>
   );
 };

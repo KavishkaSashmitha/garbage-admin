@@ -1,5 +1,5 @@
-import React from 'react';
-import AddGarbageForm from '../components/AddGarbageForm';
+import React from "react";
+import AddGarbageForm from "../components/AddGarbageForm";
 
 function adminroutes() {
   return (
