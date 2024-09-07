@@ -24,28 +24,51 @@ import {
 import { Link } from 'react-router-dom';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
-// Custom dark theme
-const darkTheme = createTheme({
+// Custom eco-friendly theme
+const ecoFriendlyTheme = createTheme({
   palette: {
     mode: 'dark',
     primary: {
-      main: '#676D75', // Adjust your primary color
+      main: '#004d40', // Earthy green for AppBar
     },
     background: {
-      default: '#1D1F24', // Dark theme background
-      paper: '#1D1F24', // Drawer background
+      default: '#2C6B2F', // Darker green background
+      paper: '#004d40', // Slightly lighter green for paper elements like Drawer
     },
     text: {
-      primary: '#FFFFFF', // Drawer text color
+      primary: '#E0E0E0', // Light text color for contrast
     },
   },
   components: {
+    MuiAppBar: {
+      styleOverrides: {
+        root: {
+          backgroundColor: '#004d40', // Earthy green for AppBar
+        },
+      },
+    },
+    MuiDrawer: {
+      styleOverrides: {
+        paper: {
+          backgroundColor: '#004d40', // Lighter green for Drawer
+          color: '#E0E0E0', // Light text color
+        },
+      },
+    },
     MuiListItemButton: {
       styleOverrides: {
         root: {
           '&:hover': {
-            backgroundColor: '#676D75', // Hover color for list items
+            backgroundColor: '#2E8B57', // Darker green for hover state
           },
+        },
+      },
+    },
+    MuiMenu: {
+      styleOverrides: {
+        paper: {
+          backgroundColor: '#3A8F3D', // Consistent with Drawer
+          color: '#E0E0E0', // Light text color
         },
       },
     },
@@ -87,9 +110,9 @@ const Navbar = () => {
             <ListItemButton component={Link} to={`/${text.toLowerCase()}`}>
               <ListItemIcon>
                 {index % 2 === 0 ? (
-                  <InboxIcon sx={{ color: '#FFFFFF' }} />
+                  <InboxIcon sx={{ color: '#E0E0E0' }} />
                 ) : (
-                  <MailIcon sx={{ color: '#FFFFFF' }} />
+                  <MailIcon sx={{ color: '#E0E0E0' }} />
                 )}
               </ListItemIcon>
               <ListItemText primary={text} />
@@ -104,9 +127,9 @@ const Navbar = () => {
             <ListItemButton component={Link} to={`/${text.toLowerCase()}`}>
               <ListItemIcon>
                 {index % 2 === 0 ? (
-                  <InboxIcon sx={{ color: '#FFFFFF' }} />
+                  <InboxIcon sx={{ color: '#E0E0E0' }} />
                 ) : (
-                  <MailIcon sx={{ color: '#FFFFFF' }} />
+                  <MailIcon sx={{ color: '#E0E0E0' }} />
                 )}
               </ListItemIcon>
               <ListItemText primary={text} />
@@ -118,7 +141,7 @@ const Navbar = () => {
   );
 
   return (
-    <ThemeProvider theme={darkTheme}>
+    <ThemeProvider theme={ecoFriendlyTheme}>
       <Box sx={{ flexGrow: 1 }}>
         <AppBar position="static" color="primary">
           <Toolbar>
@@ -132,13 +155,13 @@ const Navbar = () => {
               <MenuIcon />
             </IconButton>
             <Typography variant="h6" sx={{ flexGrow: 1 }}>
-              Municiple Waste Management
+              Municipal Waste Management
             </Typography>
             <IconButton onClick={handleMenuClick}>
               <Avatar
                 alt="User Avatar"
                 src="/path/to/avatar/image.jpg"
-                sx={{ bgcolor: '#676D75' }}
+                sx={{ bgcolor: '#2C6B2F' }} // Darker green for Avatar
               />
             </IconButton>
             <Menu
@@ -147,8 +170,8 @@ const Navbar = () => {
               onClose={handleMenuClose}
               PaperProps={{
                 sx: {
-                  bgcolor: '#1D1F24',
-                  color: '#FFFFFF',
+                  bgcolor: '#004d40', // Consistent with Drawer
+                  color: '#E0E0E0', // Light text color
                 },
               }}
             >
@@ -162,7 +185,7 @@ const Navbar = () => {
           anchor="left"
           open={drawerOpen}
           onClose={toggleDrawer(false)}
-          sx={{ '& .MuiPaper-root': { bgcolor: '#1D1F24', color: '#FFFFFF' } }}
+          sx={{ '& .MuiPaper-root': { bgcolor: '#004d40', color: '#E0E0E0' } }}
         >
           {DrawerList}
         </Drawer>
