@@ -105,7 +105,7 @@ const Navbar = () => {
       onClick={toggleDrawer(false)}
     >
       <List>
-        {['Inbox', 'Starred'].map((text, index) => (
+        {['Routes', 'Starred'].map((text, index) => (
           <ListItem key={text} disablePadding>
             <ListItemButton component={Link} to={`/${text.toLowerCase()}`}>
               <ListItemIcon>
