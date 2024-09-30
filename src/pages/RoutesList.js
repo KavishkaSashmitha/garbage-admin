@@ -38,7 +38,7 @@ const RoutesList = () => {
 
   return (
     <Container sx={{ py: 4 }}>
-      <Typography variant="h4" component="h1" gutterBottom>
+      <Typography variant="h4" component="h1" gutterBottom sx={{color:"#004d40"}}>
         All Routes
       </Typography>
       <Box
@@ -59,11 +59,11 @@ const RoutesList = () => {
             <Card
               sx={{
                 minHeight: 100,
-                bgcolor: blue[50], // Light blue background
+                bgcolor: "#d0f0c0", // Light teal background
                 boxShadow: 3, // Slight shadow for depth
                 transition: "0.3s",
                 "&:hover": {
-                  bgcolor: blue[100], // Darker blue on hover
+                  bgcolor: "#addfad", // Darker blue on hover
                   boxShadow: 6, // More prominent shadow on hover
                 },
               }}
@@ -75,7 +75,7 @@ const RoutesList = () => {
                   <Typography
                     variant="h6"
                     component="div"
-                    sx={{ mb: 1, color: blue[800] }}
+                    sx={{ mb: 1, color: "#004d40" }}
                   >
                     <LocalShippingIcon
                       sx={{ verticalAlign: "middle", mr: 1, color: blue[600] }}
