@@ -80,9 +80,9 @@ function ContestForm() {
 
     return null;
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     const validationError = validateForm();
     if (validationError) {
       setError(validationError);
@@ -97,7 +97,10 @@ function ContestForm() {
     formData.append('name', name);
     formData.append('description', description);
     formData.append('points', points);
-    formData.append('expiryDate', expiryDate);
+
+    // Convert the expiryDate string into ISO format before sending to backend
+    formData.append('expiryDate', new Date(expiryDate).toISOString());
+
     if (image) {
       formData.append('image', image);
     }
@@ -199,6 +202,7 @@ function ContestForm() {
             }
             sx={{ mb: 2 }}
           />
+
           <Button variant="contained" component="label" sx={{ mt: 2, mb: 2 }}>
             Upload Image
             <input
