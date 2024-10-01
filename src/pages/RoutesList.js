@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 import {
   Card,
   CardContent,
@@ -6,12 +6,12 @@ import {
   Box,
   Container,
   CardActionArea,
-} from "@mui/material";
-import LocationOnIcon from "@mui/icons-material/LocationOn";
-import LocalShippingIcon from "@mui/icons-material/LocalShipping";
-import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
-import { red, blue, green } from "@mui/material/colors";
-import axios from "axios";
+} from '@mui/material';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import LocalShippingIcon from '@mui/icons-material/LocalShipping';
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import { red, blue, green } from '@mui/material/colors';
+import axios from 'axios';
 
 const RoutesList = () => {
   const [routes, setRoutes] = useState([]);
@@ -19,10 +19,10 @@ const RoutesList = () => {
   useEffect(() => {
     const fetchRoutes = async () => {
       try {
-        const response = await axios.get("http://localhost:4000/get-routes");
+        const response = await axios.get('http://localhost:3000/get-routes');
         setRoutes(response.data);
       } catch (error) {
-        console.error("Error fetching routes:", error);
+        console.error('Error fetching routes:', error);
       }
     };
 
@@ -33,7 +33,7 @@ const RoutesList = () => {
     const mapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(
       routeStart
     )}&destination=${encodeURIComponent(routeEnd)}`;
-    window.open(mapsUrl, "_blank");
+    window.open(mapsUrl, '_blank');
   };
 
   return (
@@ -43,8 +43,8 @@ const RoutesList = () => {
       </Typography>
       <Box
         sx={{
-          display: "flex",
-          flexWrap: "wrap",
+          display: 'flex',
+          flexWrap: 'wrap',
           gap: 3,
         }}
       >
@@ -52,8 +52,8 @@ const RoutesList = () => {
           <Box
             key={route.id}
             sx={{
-              flex: "1 1 calc(33.333% - 16px)", // 3 columns layout with gaps
-              maxWidth: "calc(33.333% - 16px)",
+              flex: '1 1 calc(33.333% - 16px)', // 3 columns layout with gaps
+              maxWidth: 'calc(33.333% - 16px)',
             }}
           >
             <Card
@@ -61,8 +61,8 @@ const RoutesList = () => {
                 minHeight: 100,
                 bgcolor: blue[50], // Light blue background
                 boxShadow: 3, // Slight shadow for depth
-                transition: "0.3s",
-                "&:hover": {
+                transition: '0.3s',
+                '&:hover': {
                   bgcolor: blue[100], // Darker blue on hover
                   boxShadow: 6, // More prominent shadow on hover
                 },
@@ -78,27 +78,27 @@ const RoutesList = () => {
                     sx={{ mb: 1, color: blue[800] }}
                   >
                     <LocalShippingIcon
-                      sx={{ verticalAlign: "middle", mr: 1, color: blue[600] }}
+                      sx={{ verticalAlign: 'middle', mr: 1, color: blue[600] }}
                     />
                     Truck Number: {route.truckNumber}
                   </Typography>
                   <Typography variant="body2" color="textSecondary">
                     <LocationOnIcon
-                      sx={{ verticalAlign: "middle", mr: 1, color: green[600] }}
+                      sx={{ verticalAlign: 'middle', mr: 1, color: green[600] }}
                     />
                     From: {route.routeStart}
                   </Typography>
                   <Typography variant="body2" color="textSecondary">
                     <LocationOnIcon
-                      sx={{ verticalAlign: "middle", mr: 1, color: green[600] }}
+                      sx={{ verticalAlign: 'middle', mr: 1, color: green[600] }}
                     />
                     To: {route.routeEnd}
                   </Typography>
                   <Typography variant="body2" color="textSecondary">
                     <CalendarTodayIcon
-                      sx={{ verticalAlign: "middle", mr: 1, color: red[600] }}
+                      sx={{ verticalAlign: 'middle', mr: 1, color: red[600] }}
                     />
-                    Date:{" "}
+                    Date:{' '}
                     {new Date(route.date?._seconds * 1000).toLocaleDateString()}
                   </Typography>
                 </CardContent>

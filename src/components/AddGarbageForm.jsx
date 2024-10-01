@@ -1,53 +1,53 @@
-import React, { useState } from "react";
-import { TextField, Button, Box, Typography } from "@mui/material";
-import axios from "axios";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import React, { useState } from 'react';
+import { TextField, Button, Box, Typography } from '@mui/material';
+import axios from 'axios';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const AddGarbageForm = () => {
   const [formData, setFormData] = useState({
-    truckNumber: "",
-    routeStart: "",
-    routeEnd: "",
-    date: "",
+    truckNumber: '',
+    routeStart: '',
+    routeEnd: '',
+    date: '',
   });
 
   const [errors, setErrors] = useState({
-    truckNumber: "",
-    routeStart: "",
-    routeEnd: "",
-    date: "",
+    truckNumber: '',
+    routeStart: '',
+    routeEnd: '',
+    date: '',
   });
 
   const validate = () => {
     let tempErrors = {
-      truckNumber: "",
-      routeStart: "",
-      routeEnd: "",
-      date: "",
+      truckNumber: '',
+      routeStart: '',
+      routeEnd: '',
+      date: '',
     };
     let isValid = true;
 
     if (!formData.truckNumber) {
-      tempErrors.truckNumber = "Truck number is required.";
+      tempErrors.truckNumber = 'Truck number is required.';
       isValid = false;
     } else if (!/^[A-Za-z0-9]+$/.test(formData.truckNumber)) {
-      tempErrors.truckNumber = "Truck number must be alphanumeric.";
+      tempErrors.truckNumber = 'Truck number must be alphanumeric.';
       isValid = false;
     }
 
     if (!formData.routeStart) {
-      tempErrors.routeStart = "Route Start is required.";
+      tempErrors.routeStart = 'Route Start is required.';
       isValid = false;
     }
 
     if (!formData.routeEnd) {
-      tempErrors.routeEnd = "Route End is required.";
+      tempErrors.routeEnd = 'Route End is required.';
       isValid = false;
     }
 
     if (!formData.date) {
-      tempErrors.date = "Date is required.";
+      tempErrors.date = 'Date is required.';
       isValid = false;
     }
 
@@ -67,39 +67,39 @@ const AddGarbageForm = () => {
 
     if (validate()) {
       try {
-        await axios.post("http://localhost:4000/add-route", formData);
-        toast.success("Route added successfully!");
+        await axios.post('http://localhost:3000/add-route', formData);
+        toast.success('Route added successfully!');
       } catch (error) {
-        toast.error("Error adding route. Please try again.");
-        console.error("Error adding route:", error);
+        toast.error('Error adding route. Please try again.');
+        console.error('Error adding route:', error);
       }
     } else {
-      toast.warn("Please correct the errors before submitting.");
+      toast.warn('Please correct the errors before submitting.');
     }
   };
 
   return (
     <Box
       sx={{
-        width: "100vw",
-        height: "100vh",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        bgcolor: "background.paper",
+        width: '100vw',
+        height: '100vh',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        bgcolor: 'background.paper',
       }}
     >
       <Box
         sx={{
-          width: "100%",
+          width: '100%',
           maxWidth: 500,
-          height: "70vh",
-          bgcolor: "background.paper",
+          height: '70vh',
+          bgcolor: 'background.paper',
           p: 4,
           borderRadius: 1,
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
           gap: 2,
         }}
       >
