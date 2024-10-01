@@ -1,8 +1,48 @@
-import React, { useState } from 'react';
-import { TextField, Button, Box, Typography } from '@mui/material';
-import axios from 'axios';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import React, { useState } from "react";
+import { TextField, Button, Box, Typography, Snackbar, Alert, ThemeProvider, createTheme, Container } from "@mui/material";
+import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+import "react-toastify/dist/ReactToastify.css";
+
+const theme = createTheme({
+  palette: {
+    mode: 'dark',
+    background: {
+      default: '#e0f2f1', // Light teal for background
+      paper: '#ffffff', // White for paper elements
+    },
+    text: {
+      primary: '#004d40', // Dark teal for primary text
+      secondary: '#00796b', // Medium teal for secondary text
+    },
+    primary: {
+      main: '#004d40', // Dark teal for primary elements
+    },
+    secondary: {
+      main: '#00796b', // Medium teal for secondary elements
+    },
+  },
+  components: {
+    MuiTextField: {
+      styleOverrides: {
+        root: {
+          '& .MuiOutlinedInput-root': {
+            '& fieldset': {
+              borderColor: '#00796b', // Border color for input fields
+            },
+            '&:hover fieldset': {
+              borderColor: '#004d40', // Border color on hover
+            },
+            '&.Mui-focused fieldset': {
+              borderColor: '#004d40', // Border color when focused
+            },
+          },
+        },
+      },
+    },
+  },
+});
 
 const AddGarbageForm = () => {
   const [formData, setFormData] = useState({
@@ -18,6 +58,8 @@ const AddGarbageForm = () => {
     routeEnd: '',
     date: '',
   });
+
+  const navigate = useNavigate();
 
   const validate = () => {
     let tempErrors = {
@@ -67,8 +109,9 @@ const AddGarbageForm = () => {
 
     if (validate()) {
       try {
-        await axios.post('http://localhost:3000/add-route', formData);
-        toast.success('Route added successfully!');
+        await axios.post("http://localhost:4000/add-route", formData);
+        toast.success("Route added successfully!");
+        navigate("/routes");
       } catch (error) {
         toast.error('Error adding route. Please try again.');
         console.error('Error adding route:', error);
@@ -79,33 +122,21 @@ const AddGarbageForm = () => {
   };
 
   return (
-    <Box
-      sx={{
-        width: '100vw',
-        height: '100vh',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        bgcolor: 'background.paper',
-      }}
-    >
-      <Box
+    <ThemeProvider theme={theme}>
+      <Container
+        maxWidth="sm"
         sx={{
-          width: '100%',
-          maxWidth: 500,
-          height: '70vh',
-          bgcolor: 'background.paper',
+          mt: 4,
+          bgcolor: 'background.default',
           p: 4,
-          borderRadius: 1,
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          gap: 2,
+          borderRadius: 2,
+          boxShadow: 3,
         }}
       >
         <Typography variant="h5" component="h1" gutterBottom>
           Route Schedule
         </Typography>
+        <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
         <TextField
           label="Truck Number"
           name="truckNumber"
@@ -115,6 +146,7 @@ const AddGarbageForm = () => {
           variant="outlined"
           error={!!errors.truckNumber}
           helperText={errors.truckNumber}
+          sx={{ mb: 2 }}
         />
         <TextField
           label="Route Start"
@@ -125,6 +157,7 @@ const AddGarbageForm = () => {
           variant="outlined"
           error={!!errors.routeStart}
           helperText={errors.routeStart}
+          sx={{ mb: 2 }}
         />
         <TextField
           label="Route End"
@@ -135,6 +168,7 @@ const AddGarbageForm = () => {
           variant="outlined"
           error={!!errors.routeEnd}
           helperText={errors.routeEnd}
+          sx={{ mb: 2 }}
         />
         <TextField
           label="Date"
@@ -149,13 +183,16 @@ const AddGarbageForm = () => {
           variant="outlined"
           error={!!errors.date}
           helperText={errors.date}
+          sx={{ mb: 2 }}
         />
         <Button variant="contained" color="primary" onClick={handleSubmit}>
           Submit
         </Button>
       </Box>
+      </Container>
       <ToastContainer />
-    </Box>
+      </ThemeProvider>
+    
   );
 };
 
