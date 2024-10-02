@@ -1,271 +1,254 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-  Container,
+  Card,
+  CardContent,
   Typography,
-  TextField,
-  Button,
   Box,
-  CircularProgress,
-  Snackbar,
-  Alert,
-  ThemeProvider,
-  createTheme,
+  Container,
+  CardActionArea,
+  IconButton,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  TextField,
+  DialogActions,
 } from '@mui/material';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import LocalShippingIcon from '@mui/icons-material/LocalShipping';
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { red, blue, green } from '@mui/material/colors';
 import axios from 'axios';
 
-const theme = createTheme({
-  palette: {
-    mode: 'dark',
-    background: {
-      default: '#e0f2f1', // Light teal for background
-      paper: '#ffffff', // White for paper elements
-    },
-    text: {
-      primary: '#004d40', // Dark teal for primary text
-      secondary: '#00796b', // Medium teal for secondary text
-    },
-    primary: {
-      main: '#004d40', // Dark teal for primary elements
-    },
-    secondary: {
-      main: '#00796b', // Medium teal for secondary elements
-    },
-  },
-  components: {
-    MuiTextField: {
-      styleOverrides: {
-        root: {
-          '& .MuiOutlinedInput-root': {
-            '& fieldset': {
-              borderColor: '#00796b', // Border color for input fields
-            },
-            '&:hover fieldset': {
-              borderColor: '#004d40', // Border color on hover
-            },
-            '&.Mui-focused fieldset': {
-              borderColor: '#004d40', // Border color when focused
-            },
-          },
-        },
-      },
-    },
-  },
-});
+const RoutesList = () => {
+  const [routes, setRoutes] = useState([]);
+  const [selectedRoute, setSelectedRoute] = useState(null);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [formValues, setFormValues] = useState({
+    truckNumber: '',
+    routeStart: '',
+    routeEnd: '',
+    date: '',
+  });
 
-function ContestForm() {
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
-  const [points, setPoints] = useState('');
-  const [expiryDate, setExpiryDate] = useState('');
-  const [image, setImage] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(false);
+  useEffect(() => {
+    const fetchRoutes = async () => {
+      try {
+        const response = await axios.get('http://localhost:3000/get-routes');
+        setRoutes(response.data);
+      } catch (error) {
+        console.error('Error fetching routes:', error);
+      }
+    };
 
-  const validateForm = () => {
-    const today = new Date();
-    const expiry = new Date(expiryDate);
+    fetchRoutes();
+  }, []);
 
-    if (!name || !description || !points || !expiryDate || !image) {
-      return 'All fields are required';
-    }
-
-    if (!Number.isInteger(Number(points)) || Number(points) <= 0) {
-      return 'Points must be a positive integer';
-    }
-
-    if (expiry <= today) {
-      return 'Expiry date must be after today';
-    }
-
-    return null;
+  const openGoogleMaps = (routeStart, routeEnd) => {
+    const mapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(
+      routeStart
+    )}&destination=${encodeURIComponent(routeEnd)}`;
+    window.open(mapsUrl, '_blank');
   };
-  const handleSubmit = async (e) => {
-    e.preventDefault();
 
-    const validationError = validateForm();
-    if (validationError) {
-      setError(validationError);
-      return;
-    }
+  const handleEditClick = (route) => {
+    setSelectedRoute(route);
+    setFormValues({
+      truckNumber: route.truckNumber,
+      routeStart: route.routeStart,
+      routeEnd: route.routeEnd,
+      date: new Date(route.date?._seconds * 1000)
+        .toISOString()
+        .substring(0, 10),
+    });
+    setOpenDialog(true);
+  };
 
-    setLoading(true);
-    setError(null);
-    setSuccess(false);
-
-    const formData = new FormData();
-    formData.append('name', name);
-    formData.append('description', description);
-    formData.append('points', points);
-
-    // Convert the expiryDate string into ISO format before sending to backend
-    formData.append('expiryDate', new Date(expiryDate).toISOString());
-
-    if (image) {
-      formData.append('image', image);
-    }
-
+  const handleDeleteClick = async (id) => {
     try {
-      await axios.post('http://localhost:4000/contests', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-      setSuccess(true);
-      // Reset the form after success
-      setName('');
-      setDescription('');
-      setPoints('');
-      setExpiryDate('');
-      setImage(null);
-    } catch (err) {
-      setError('Failed to add contest');
-    } finally {
-      setLoading(false);
+      await axios.delete(`http://localhost:3000/delete-route/${id}`);
+      setRoutes(routes.filter((route) => route.id !== id));
+    } catch (error) {
+      console.error('Error deleting route:', error);
+    }
+  };
+
+  const handleFormChange = (e) => {
+    setFormValues({
+      ...formValues,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleFormSubmit = async () => {
+    try {
+      await axios.put(
+        `http://localhost:3000/update-route/${selectedRoute.id}`,
+        formValues
+      );
+      setRoutes(
+        routes.map((route) =>
+          route.id === selectedRoute.id ? { ...route, ...formValues } : route
+        )
+      );
+      setOpenDialog(false);
+    } catch (error) {
+      console.error('Error updating route:', error);
     }
   };
 
   return (
-    <ThemeProvider theme={theme}>
-      <Container
-        maxWidth="sm"
+    <Container sx={{ py: 4 }}>
+      <Typography
+        variant="h4"
+        component="h1"
+        gutterBottom
+        sx={{ color: '#004d40' }}
+      >
+        All Routes
+      </Typography>
+      <Box
         sx={{
-          mt: 4,
-          bgcolor: 'background.default',
-          p: 4,
-          borderRadius: 2,
-          boxShadow: 3,
+          display: 'flex',
+          flexWrap: 'wrap',
+          gap: 3,
         }}
       >
-        <Typography variant="h4" color="text.primary" gutterBottom>
-          Add New Contest
-        </Typography>
-        <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
-          <TextField
-            label="Name"
-            variant="outlined"
-            fullWidth
-            margin="normal"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            error={!name && error}
-            helperText={!name && error ? 'Name is required' : ''}
-            sx={{ mb: 2 }}
-          />
-          <TextField
-            label="Description"
-            variant="outlined"
-            fullWidth
-            margin="normal"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            error={!description && error}
-            helperText={!description && error ? 'Description is required' : ''}
-            sx={{ mb: 2 }}
-          />
-          <TextField
-            label="Points"
-            variant="outlined"
-            fullWidth
-            margin="normal"
-            value={points}
-            onChange={(e) => setPoints(e.target.value)}
-            type="number"
-            inputProps={{ min: 1 }}
-            error={
-              (isNaN(points) ||
-                !Number.isInteger(Number(points)) ||
-                points <= 0) &&
-              error
-            }
-            helperText={
-              isNaN(points) || !Number.isInteger(Number(points)) || points <= 0
-                ? 'Points must be a positive integer'
-                : ''
-            }
-            sx={{ mb: 2 }}
-          />
-          <TextField
-            label="Expiry Date"
-            type="date"
-            variant="outlined"
-            fullWidth
-            margin="normal"
-            InputLabelProps={{ shrink: true }}
-            value={expiryDate}
-            onChange={(e) => setExpiryDate(e.target.value)}
-            error={new Date(expiryDate) <= new Date() && error}
-            helperText={
-              new Date(expiryDate) <= new Date()
-                ? 'Expiry date must be after today'
-                : ''
-            }
-            sx={{ mb: 2 }}
-          />
+        {routes.map((route) => (
+          <Box
+            key={route.id}
+            sx={{
+              flex: '1 1 calc(33.333% - 16px)', // 3 columns layout with gaps
+              maxWidth: 'calc(33.333% - 16px)',
+            }}
+          >
+            <Card
+              sx={{
+                minHeight: 100,
+                bgcolor: '#d0f0c0', // Light teal background
+                boxShadow: 3, // Slight shadow for depth
+                transition: '0.3s',
+                '&:hover': {
+                  bgcolor: '#addfad', // Darker blue on hover
+                  boxShadow: 6, // More prominent shadow on hover
+                },
+              }}
+            >
+              <CardActionArea
+                onClick={() => openGoogleMaps(route.routeStart, route.routeEnd)}
+              >
+                <CardContent>
+                  <Typography
+                    variant="h6"
+                    component="div"
+                    sx={{ mb: 1, color: '#004d40' }}
+                  >
+                    <LocalShippingIcon
+                      sx={{ verticalAlign: 'middle', mr: 1, color: blue[600] }}
+                    />
+                    Truck Number: {route.truckNumber}
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    <LocationOnIcon
+                      sx={{ verticalAlign: 'middle', mr: 1, color: green[600] }}
+                    />
+                    From: {route.routeStart}
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    <LocationOnIcon
+                      sx={{ verticalAlign: 'middle', mr: 1, color: green[600] }}
+                    />
+                    To: {route.routeEnd}
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    <CalendarTodayIcon
+                      sx={{ verticalAlign: 'middle', mr: 1, color: red[600] }}
+                    />
+                    Date:{' '}
+                    {new Date(route.date?._seconds * 1000).toLocaleDateString()}
+                  </Typography>
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      mt: 2,
+                    }}
+                  >
+                    <IconButton
+                      aria-label="edit"
+                      color="primary"
+                      onClick={() => handleEditClick(route)}
+                    >
+                      <EditIcon />
+                    </IconButton>
+                    <IconButton
+                      aria-label="delete"
+                      color="secondary"
+                      onClick={() => handleDeleteClick(route.id)}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </Box>
+                </CardContent>
+              </CardActionArea>
+            </Card>
+          </Box>
+        ))}
+      </Box>
 
-          <Button variant="contained" component="label" sx={{ mt: 2, mb: 2 }}>
-            Upload Image
-            <input
-              type="file"
-              hidden
-              accept="image/*"
-              onChange={(e) => setImage(e.target.files[0])}
+      {/* Edit Dialog */}
+      {selectedRoute && (
+        <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
+          <DialogTitle>Edit Route</DialogTitle>
+          <DialogContent>
+            <TextField
+              label="Truck Number"
+              fullWidth
+              margin="normal"
+              name="truckNumber"
+              value={formValues.truckNumber}
+              onChange={handleFormChange}
             />
-          </Button>
-          {image && (
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-              {image.name}
-            </Typography>
-          )}
-          <Button
-            type="submit"
-            variant="contained"
-            color="primary"
-            fullWidth
-            sx={{ mt: 2, borderRadius: 2 }}
-          >
-            {loading ? (
-              <CircularProgress color="inherit" size={24} />
-            ) : (
-              'Submit'
-            )}
-          </Button>
-        </Box>
-        {error && (
-          <Snackbar
-            open={true}
-            autoHideDuration={6000}
-            onClose={() => setError(null)}
-            sx={{ mt: 2 }}
-          >
-            <Alert
-              onClose={() => setError(null)}
-              severity="error"
-              sx={{ width: '100%' }}
-            >
-              {error}
-            </Alert>
-          </Snackbar>
-        )}
-        {success && (
-          <Snackbar
-            open={true}
-            autoHideDuration={6000}
-            onClose={() => setSuccess(false)}
-            sx={{ mt: 2 }}
-          >
-            <Alert
-              onClose={() => setSuccess(false)}
-              severity="success"
-              sx={{ width: '100%' }}
-            >
-              Contest added successfully!
-            </Alert>
-          </Snackbar>
-        )}
-      </Container>
-    </ThemeProvider>
+            <TextField
+              label="From"
+              fullWidth
+              margin="normal"
+              name="routeStart"
+              value={formValues.routeStart}
+              onChange={handleFormChange}
+            />
+            <TextField
+              label="To"
+              fullWidth
+              margin="normal"
+              name="routeEnd"
+              value={formValues.routeEnd}
+              onChange={handleFormChange}
+            />
+            <TextField
+              label="Date"
+              fullWidth
+              margin="normal"
+              name="date"
+              type="date"
+              value={formValues.date}
+              onChange={handleFormChange}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setOpenDialog(false)} color="secondary">
+              Cancel
+            </Button>
+            <Button onClick={handleFormSubmit} color="primary">
+              Save
+            </Button>
+          </DialogActions>
+        </Dialog>
+      )}
+    </Container>
   );
-}
+};
 
-export default ContestForm;
+export default RoutesList;

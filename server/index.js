@@ -69,19 +69,19 @@ app.post('/add-route', async (req, res) => {
 app.get('/get-routes', async (req, res) => {
   try {
     const routesCollection = db.collection('routes');
-
     const snapshot = await routesCollection.get();
 
     if (snapshot.empty) {
       return res.status(404).json({ message: 'No routes found' });
     }
 
-//     const markers = snapshot.docs.map((doc) => ({
-//       id: doc.id,
-//       ...doc.data(),
-//     }));
+    // Map the documents from the snapshot to a routes array
+    const routes = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
 
-    res.status(200).json(routes);
+    res.status(200).json(routes); // Send the routes array in the response
   } catch (e) {
     console.error('Error fetching routes: ', e);
     res
@@ -288,6 +288,49 @@ app.get('/get-users', async (req, res) => {
   } catch (e) {
     console.error('Error fetching users: ', e);
     res.status(500).json({ message: 'Error fetching users', error: e.message });
+  }
+});
+app.put('/update-route/:id', async (req, res) => {
+  const { id } = req.params;
+  const { truckNumber, routeStart, routeEnd, date } = req.body;
+
+  try {
+    const routeRef = db.collection('routes').doc(id);
+    const routeDoc = await routeRef.get();
+
+    if (!routeDoc.exists) {
+      return res.status(404).json({ message: 'Route not found' });
+    }
+
+    await routeRef.update({
+      truckNumber,
+      routeStart,
+      routeEnd,
+      date: Timestamp.fromDate(new Date(date)),
+    });
+
+    res.status(200).send('Route updated successfully');
+  } catch (error) {
+    console.error('Error updating route:', error);
+    res.status(500).send('Error updating route: ' + error.message);
+  }
+});
+
+app.delete('/delete-route/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const routeRef = db.collection('routes').doc(id);
+    const routeDoc = await routeRef.get();
+
+    if (!routeDoc.exists) {
+      return res.status(404).send('Route not found');
+    }
+
+    await routeRef.delete();
+    res.status(200).send('Route deleted successfully');
+  } catch (error) {
+    console.error('Error deleting route:', error);
+    res.status(500).send('Error deleting route: ' + error.message);
   }
 });
 

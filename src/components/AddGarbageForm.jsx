@@ -1,10 +1,20 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 
-import { TextField, Button, Box, Typography, Snackbar, Alert, ThemeProvider, createTheme, Container } from "@mui/material";
-import axios from "axios";
-import { ToastContainer, toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
-import "react-toastify/dist/ReactToastify.css";
+import {
+  TextField,
+  Button,
+  Box,
+  Typography,
+  Snackbar,
+  Alert,
+  ThemeProvider,
+  createTheme,
+  Container,
+} from '@mui/material';
+import axios from 'axios';
+import { ToastContainer, toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
+import 'react-toastify/dist/ReactToastify.css';
 
 const theme = createTheme({
   palette: {
@@ -98,7 +108,6 @@ const AddGarbageForm = () => {
     return isValid;
   };
 
-
   const handleChange = (event) => {
     setFormData({
       ...formData,
@@ -111,9 +120,9 @@ const AddGarbageForm = () => {
 
     if (validate()) {
       try {
-        await axios.post("http://localhost:4000/add-route", formData);
-        toast.success("Route added successfully!");
-        navigate("/routes");
+        await axios.post('http://localhost:3000/add-route', formData);
+        toast.success('Route added successfully!');
+        navigate('/routes');
       } catch (error) {
         toast.error('Error adding route. Please try again.');
         console.error('Error adding route:', error);
@@ -139,62 +148,61 @@ const AddGarbageForm = () => {
           Route Schedule
         </Typography>
         <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
-        <TextField
-          label="Truck Number"
-          name="truckNumber"
-          value={formData.truckNumber}
-          onChange={handleChange}
-          fullWidth
-          variant="outlined"
-          error={!!errors.truckNumber}
-          helperText={errors.truckNumber}
-          sx={{ mb: 2 }}
-        />
-        <TextField
-          label="Route Start"
-          name="routeStart"
-          value={formData.routeStart}
-          onChange={handleChange}
-          fullWidth
-          variant="outlined"
-          error={!!errors.routeStart}
-          helperText={errors.routeStart}
-          sx={{ mb: 2 }}
-        />
-        <TextField
-          label="Route End"
-          name="routeEnd"
-          value={formData.routeEnd}
-          onChange={handleChange}
-          fullWidth
-          variant="outlined"
-          error={!!errors.routeEnd}
-          helperText={errors.routeEnd}
-          sx={{ mb: 2 }}
-        />
-        <TextField
-          label="Date"
-          name="date"
-          type="date"
-          value={formData.date}
-          onChange={handleChange}
-          InputLabelProps={{
-            shrink: true,
-          }}
-          fullWidth
-          variant="outlined"
-          error={!!errors.date}
-          helperText={errors.date}
-          sx={{ mb: 2 }}
-        />
-        <Button variant="contained" color="primary" onClick={handleSubmit}>
-          Submit
-        </Button>
-      </Box>
+          <TextField
+            label="Truck Number"
+            name="truckNumber"
+            value={formData.truckNumber}
+            onChange={handleChange}
+            fullWidth
+            variant="outlined"
+            error={!!errors.truckNumber}
+            helperText={errors.truckNumber}
+            sx={{ mb: 2 }}
+          />
+          <TextField
+            label="Route Start"
+            name="routeStart"
+            value={formData.routeStart}
+            onChange={handleChange}
+            fullWidth
+            variant="outlined"
+            error={!!errors.routeStart}
+            helperText={errors.routeStart}
+            sx={{ mb: 2 }}
+          />
+          <TextField
+            label="Route End"
+            name="routeEnd"
+            value={formData.routeEnd}
+            onChange={handleChange}
+            fullWidth
+            variant="outlined"
+            error={!!errors.routeEnd}
+            helperText={errors.routeEnd}
+            sx={{ mb: 2 }}
+          />
+          <TextField
+            label="Date"
+            name="date"
+            type="date"
+            value={formData.date}
+            onChange={handleChange}
+            InputLabelProps={{
+              shrink: true,
+            }}
+            fullWidth
+            variant="outlined"
+            error={!!errors.date}
+            helperText={errors.date}
+            sx={{ mb: 2 }}
+          />
+          <Button variant="contained" color="primary" onClick={handleSubmit}>
+            Submit
+          </Button>
+        </Box>
       </Container>
       <ToastContainer />
-      </ThemeProvider>
-    
+    </ThemeProvider>
   );
 };
 
