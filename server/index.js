@@ -13,7 +13,7 @@ import serviceAccount from "./servicekry.json" assert { type: "json" };
 dotenv.config(); // Load environment variables from .env file
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 4000;
 app.use(cors());
 
 // Initialize Firebase Admin SDK
@@ -43,53 +43,31 @@ app.use(express.urlencoded({ extended: true }));
 app.get("/", (req, res) => {
   res.send("Hello");
 });
-app.post("/add-route", async (req, res) => {
-  const { truckNumber, routeStart, routeEnd, date } = req.body;
 
-  try {
-    const routesCollection = db.collection("routes");
 
-    const newRoute = await routesCollection.add({
-      truckNumber: truckNumber,
-      routeStart: routeStart,
-      routeEnd: routeEnd,
-      date: Timestamp.fromDate(new Date(date)),
-    });
+// // Route to fetch all markers
+// app.get("/marker", async (req, res) => {
+//   try {
+//     const markersCollection = db.collection("markers");
+//     const snapshot = await markersCollection.get();
 
-    res.status(201).json({
-      message: "Route added successfully",
-      routeId: newRoute.id,
-    });
-  } catch (e) {
-    console.error("Error adding route: ", e);
-    res.status(500).json({ message: "Error adding route", error: e.message });
-  }
-});
+//     if (snapshot.empty) {
+//       return res.status(404).json({ message: "No markers found" });
+//     }
 
-app.get("/get-routes", async (req, res) => {
-  try {
-    const routesCollection = db.collection("routes");
+//     const markers = snapshot.docs.map((doc) => ({
+//       id: doc.id,
+//       ...doc.data(),
+//     }));
 
-    const snapshot = await routesCollection.get();
+//     res.json(markers);
+//   } catch (error) {
+//     console.error("Error fetching markers:", error);
+//     res.status(500).json({ message: "Error fetching markers", error: error.message });
+//   }
+// });
 
-    if (snapshot.empty) {
-      return res.status(404).json({ message: "No routes found" });
-    }
-
-    const routes = snapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-
-    res.status(200).json(routes);
-  } catch (e) {
-    console.error("Error fetching routes: ", e);
-    res
-      .status(500)
-      .json({ message: "Error fetching routes", error: e.message });
-  }
-});
-
+// QR code verification route
 app.get("/verify/:userId", async (req, res) => {
   console.log("Request received for:", req.params.userId); // Log userId
 
@@ -115,6 +93,7 @@ app.get("/verify/:userId", async (req, res) => {
   }
 });
 
+// Route to fetch user information
 app.get("/user/:userId", async (req, res) => {
   const userId = req.params.userId;
 
@@ -131,6 +110,30 @@ app.get("/user/:userId", async (req, res) => {
   } catch (error) {
     console.error("Error fetching user data:", error);
     res.status(500).send("Internal Server Error");
+  }
+});
+
+// Route to add a new route
+app.post("/add-route", async (req, res) => {
+  const { truckNumber, routeStart, routeEnd, date } = req.body;
+
+  try {
+    const routesCollection = db.collection("routes");
+
+    const newRoute = await routesCollection.add({
+      truckNumber: truckNumber,
+      routeStart: routeStart,
+      routeEnd: routeEnd,
+      date: Timestamp.fromDate(new Date(date)),
+    });
+
+    res.status(201).json({
+      message: "Route added successfully",
+      routeId: newRoute.id,
+    });
+  } catch (e) {
+    console.error("Error adding route: ", e);
+    res.status(500).json({ message: "Error adding route", error: e.message });
   }
 });
 
@@ -209,7 +212,18 @@ app.get("/contests", async (req, res) => {
     res.status(500).json({ error: "Failed to fetch contests" });
   }
 });
+router.post('/locations', async (req, res) => {
+  const { binNumber, routeLocation,category, lat, lng } = req.body;
 
+  try {
+    const newLocation = new Location({ binNumber, routeLocation,category, lat, lng });
+    await newLocation.save();
+    res.status(201).json({ message: 'Location saved successfully' });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to save location' });
+  }
+});
+// Start the server
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });

@@ -79,7 +79,7 @@ function ContestList() {
   useEffect(() => {
     const fetchContests = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/contests');
+        const response = await axios.get('http://localhost:4000/contests');
         setContests(response.data);
         setFilteredContests(response.data);
       } catch (err) {
