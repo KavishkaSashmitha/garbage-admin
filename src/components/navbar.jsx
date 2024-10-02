@@ -196,9 +196,11 @@ const Navbar = () => {
             <Typography variant="h6" sx={{ flexGrow: 1 }}>
               Municipal Waste Management
             </Typography>
-            <Button color="inherit">Home</Button>
-            <Button color="inherit">Routes</Button>
-            <Button color="inherit">Contest</Button>
+            
+              <Button color="inherit" href='/'>Home</Button>
+            
+            <Button color="inherit" href="/routes">Routes</Button>
+            <Button color="inherit" href='/contests'>Contest</Button>
             <Button color="inherit">User Points</Button>
             <Button color="inherit">Contact</Button>
           </Toolbar>
