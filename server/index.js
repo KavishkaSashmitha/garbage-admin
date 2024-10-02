@@ -270,6 +270,26 @@ app.delete('/contests/:id', async (req, res) => {
     res.status(500).send('Error deleting contest');
   }
 });
+app.get('/get-users', async (req, res) => {
+  try {
+    const usersCollection = db.collection('users');
+    const snapshot = await usersCollection.get();
+
+    if (snapshot.empty) {
+      return res.status(404).json({ message: 'No users found' });
+    }
+
+    const users = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    res.status(200).json(users);
+  } catch (e) {
+    console.error('Error fetching users: ', e);
+    res.status(500).json({ message: 'Error fetching users', error: e.message });
+  }
+});
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);

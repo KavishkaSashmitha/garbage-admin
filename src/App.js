@@ -9,19 +9,21 @@ import PointsAdd from './pages/pointsAdd';
 import Navbar from './components/navbar';
 import addEvents from './pages/addEvents';
 import RoutesList from './pages/RoutesList';
-import Home from './pages/Home';
+import HomePage from './pages/home_page';
 import ContestList from './pages/allEvents';
+import UsersList from './pages/allusers';
 
 function App() {
   return (
     <BrowserRouter>
       <Navbar />
       <Routes>
-        <Route path="/" Component={Home} />{' '}
+        <Route path="/" Component={HomePage} />{' '}
         <Route path="/add-route" Component={adminroutes} />{' '}
         <Route path="/routes" Component={RoutesList} />{' '}
         <Route path="/contests" Component={ContestList} />{' '}
         <Route path="/points-add/:id" element={<PointsAdd />} />
+        <Route path="/userpoints" element={<UsersList />} />
         {/* <Route path="/contests" Component={ContestList} />{" "} */}
         <Route path="/add-contest" Component={addEvents} />{' '}
         {/* 👈 Renders at /app/ */}

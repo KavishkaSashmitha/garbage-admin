@@ -91,9 +91,11 @@ function ContestList() {
       name: selectedContest.name,
       description: selectedContest.description,
       // Format date to 'YYYY-MM-DD' for date input
-      date: selectedContest.expiryDate
-        ? selectedContest.expiryDate.toISOString().split('T')[0]
-        : '',
+      date:
+        selectedContest.expiryDate instanceof Date &&
+        !isNaN(selectedContest.expiryDate)
+          ? selectedContest.expiryDate.toISOString().split('T')[0]
+          : '',
     });
     setOpenDialog(true);
     handleMenuClose();
@@ -122,7 +124,7 @@ function ContestList() {
       // Constructing the edited contest data
       const filteredEditContest = {
         ...editContest,
-        expiryDate: new Date(editContest.date).getTime() / 1000, // Convert back to Firestore format
+        createdAt: new Date(editContest.date).getTime() / 1000, // Convert back to Firestore format
       };
 
       const response = await axios.put(
@@ -203,11 +205,9 @@ function ContestList() {
                   <TableCell>{contest.name}</TableCell>
                   <TableCell>{contest.description}</TableCell>
                   <TableCell>
-                    {contest.expiryDate
-                      ? contest.expiryDate.toLocaleDateString() +
-                        ' ' +
-                        contest.expiryDate.toLocaleTimeString()
-                      : 'No Expiry Date'}
+                    {new Date(
+                      contest.createdAt?._seconds * 1000
+                    ).toLocaleDateString()}
                   </TableCell>
                   <TableCell>
                     <IconButton
@@ -259,10 +259,10 @@ function ContestList() {
           />
           <TextField
             label="Date"
-            name="date"
+            name="expiryDate"
             type="date"
             fullWidth
-            value={editContest.date}
+            value={editContest.createdAt}
             onChange={handleEditChange}
             margin="normal"
           />

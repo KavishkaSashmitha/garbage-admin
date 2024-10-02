@@ -15,6 +15,7 @@ import {
   Avatar,
   Menu,
   MenuItem,
+  Button,
 } from '@mui/material';
 import {
   Menu as MenuIcon,
@@ -122,7 +123,7 @@ const Navbar = () => {
       </List>
       <Divider />
       <List>
-        {['Contests', 'Users', 'Feedback'].map((text, index) => (
+        {['Contests', 'Userpoints', 'Feedback'].map((text, index) => (
           <ListItem key={text} disablePadding>
             <ListItemButton component={Link} to={`/${text.toLowerCase()}`}>
               <ListItemIcon>
@@ -143,7 +144,7 @@ const Navbar = () => {
   return (
     <ThemeProvider theme={ecoFriendlyTheme}>
       <Box sx={{ flexGrow: 1 }}>
-        <AppBar position="static" color="primary">
+        {/* <AppBar position="static" color="primary">
           <Toolbar>
             <IconButton
               edge="start"
@@ -179,6 +180,27 @@ const Navbar = () => {
               <MenuItem onClick={handleMenuClose}>My account</MenuItem>
               <MenuItem onClick={handleMenuClose}>Logout</MenuItem>
             </Menu>
+          </Toolbar>
+        </AppBar> */}
+        <AppBar position="static" style={{ backgroundColor: '#004d40' }}>
+          <Toolbar>
+            <IconButton
+              edge="start"
+              color="inherit"
+              aria-label="menu"
+              onClick={toggleDrawer(true)}
+              sx={{ mr: 2 }}
+            >
+              <MenuIcon />
+            </IconButton>
+            <Typography variant="h6" sx={{ flexGrow: 1 }}>
+              Municipal Waste Management
+            </Typography>
+            <Button color="inherit">Home</Button>
+            <Button color="inherit">Routes</Button>
+            <Button color="inherit">Contest</Button>
+            <Button color="inherit">User Points</Button>
+            <Button color="inherit">Contact</Button>
           </Toolbar>
         </AppBar>
         <Drawer
