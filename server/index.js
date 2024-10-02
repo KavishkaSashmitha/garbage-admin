@@ -13,7 +13,7 @@ import serviceAccount from './servicekry.json' assert { type: 'json' };
 dotenv.config(); // Load environment variables from .env file
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 4000;
 app.use(cors());
 
 // Initialize Firebase Admin SDK
@@ -76,10 +76,10 @@ app.get('/get-routes', async (req, res) => {
       return res.status(404).json({ message: 'No routes found' });
     }
 
-    const routes = snapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
+//     const markers = snapshot.docs.map((doc) => ({
+//       id: doc.id,
+//       ...doc.data(),
+//     }));
 
     res.status(200).json(routes);
   } catch (e) {

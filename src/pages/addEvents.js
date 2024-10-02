@@ -106,7 +106,7 @@ function ContestForm() {
     }
 
     try {
-      await axios.post('http://localhost:3000/contests', formData, {
+      await axios.post('http://localhost:4000/contests', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
