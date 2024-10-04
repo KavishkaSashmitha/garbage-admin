@@ -172,8 +172,8 @@ const RoutesList = () => {
         formValues
       );
       // Fetch the updated list of routes
-    const response = await axios.get("http://localhost:4000/get-routes");
-    setRoutes(response.data); // Update the routes state with the latest data
+      const response = await axios.get("http://localhost:4000/get-routes");
+      setRoutes(response.data); // Update the routes state with the latest data
       setOpenDialog(false);
       Swal.fire({
         title: "Success!",
