@@ -202,6 +202,7 @@ const Navbar = () => {
             <Button color="inherit" href="/routes">Routes</Button>
             <Button color="inherit" href='/contests'>Contest</Button>
             <Button color="inherit">User Points</Button>
+            <Button color="inherit" href='/userDetail'>User Details</Button>
             <Button color="inherit">Contact</Button>
           </Toolbar>
         </AppBar>

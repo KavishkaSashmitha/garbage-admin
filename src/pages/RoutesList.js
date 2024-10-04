@@ -36,7 +36,7 @@ const RoutesList = () => {
   useEffect(() => {
     const fetchRoutes = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/get-routes');
+        const response = await axios.get('http://localhost:4000/get-routes');
         setRoutes(response.data);
       } catch (error) {
         console.error('Error fetching routes:', error);

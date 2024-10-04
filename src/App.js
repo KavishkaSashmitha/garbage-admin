@@ -13,6 +13,7 @@ import RoutesList from './pages/RoutesList';
 import HomePage from './pages/home_page';
 import ContestList from './pages/allEvents';
 import UsersList from './pages/allusers';
+import UserDetails from './pages/UserDetails';
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
         <Route path="/userpoints" element={<UsersList />} />
         {/* <Route path="/contests" Component={ContestList} />{" "} */}
         <Route path="/add-contest" Component={addEvents} />{' '}
+        <Route path='/userdetail' element={<UserDetails/>}/>{' '}
         {/* 👈 Renders at /app/ */}
       </Routes>
     </BrowserRouter>
