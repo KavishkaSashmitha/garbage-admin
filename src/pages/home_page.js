@@ -17,6 +17,7 @@ import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 
+
 // Slider settings
 const sliderSettings = {
   dots: true,
@@ -63,23 +64,23 @@ const HomePage = () => {
         <Slider {...sliderSettings}>
           <div>
             <img
-              src="https://via.placeholder.com/1200x400?text=Garbage+Collection+1"
+              src="/recycle1.jpg"
               alt="Slide 1"
-              style={{ width: '100%' }}
+              style={{ width: '100%', height: '700px', objectFit: 'cover' }}
             />
           </div>
           <div>
             <img
-              src="https://via.placeholder.com/1200x400?text=Garbage+Collection+2"
+              src="/garbage.jpg"
               alt="Slide 2"
-              style={{ width: '100%' }}
+              style={{ width: '100%', height: '700px', objectFit: 'cover' }}
             />
           </div>
           <div>
             <img
-              src="https://via.placeholder.com/1200x400?text=Garbage+Collection+3"
+              src="/bins.jpg"
               alt="Slide 3"
-              style={{ width: '100%' }}
+              style={{ width: '100%', height: '700px', objectFit: 'cover' }}
             />
           </div>
         </Slider>

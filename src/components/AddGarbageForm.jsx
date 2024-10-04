@@ -12,7 +12,7 @@ import {
   Container,
 } from '@mui/material';
 import axios from 'axios';
-import { ToastContainer, toast } from 'react-toastify';
+import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -97,10 +97,14 @@ const AddGarbageForm = () => {
     if (!formData.routeEnd) {
       tempErrors.routeEnd = 'Route End is required.';
       isValid = false;
-    }
+    } 
 
+    // Date validation: must not be empty or in the past
     if (!formData.date) {
-      tempErrors.date = 'Date is required.';
+      tempErrors.date = "Date is required";
+      isValid = false;
+    } else if (new Date(formData.date) < new Date()) {
+      tempErrors.date = "Date cannot be in the past";
       isValid = false;
     }
 
@@ -120,15 +124,34 @@ const AddGarbageForm = () => {
 
     if (validate()) {
       try {
-        await axios.post('http://localhost:3000/add-route', formData);
-        toast.success('Route added successfully!');
+        await axios.post('http://localhost:4000/add-route', formData);
+        // SweetAlert2 Success Message
+        Swal.fire({
+          title: 'Success!',
+          text: 'Route added successfully!',
+          icon: 'success',
+          confirmButtonText: 'OK',
+        }).then(() => {
         navigate('/routes');
+      });
       } catch (error) {
-        toast.error('Error adding route. Please try again.');
+         // SweetAlert2 Error Message
+         Swal.fire({
+          title: 'Error!',
+          text: 'Error adding route. Please try again.',
+          icon: 'error',
+          confirmButtonText: 'OK',
+        });
         console.error('Error adding route:', error);
       }
     } else {
-      toast.warn('Please correct the errors before submitting.');
+      // SweetAlert2 Warning Message for form validation errors
+      Swal.fire({
+        title: 'Warning!',
+        text: 'Please correct the errors before submitting.',
+        icon: 'warning',
+        confirmButtonText: 'OK',
+      });
     }
   };
 
@@ -201,7 +224,6 @@ const AddGarbageForm = () => {
           </Button>
         </Box>
       </Container>
-      <ToastContainer />
     </ThemeProvider>
   );
 };

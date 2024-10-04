@@ -13,6 +13,8 @@ import RoutesList from './pages/RoutesList';
 import HomePage from './pages/home_page';
 import ContestList from './pages/allEvents';
 import UsersList from './pages/allusers';
+import RouteDetailsReport from './components/RouteDetailsReport';
+import AddGarbageForm from './components/AddGarbageForm';
 
 function App() {
   return (
@@ -25,6 +27,7 @@ function App() {
         <Route path="/contests" Component={ContestList} />{' '}
         <Route path="/points-add/:id" element={<PointsAdd />} />
         <Route path="/userpoints" element={<UsersList />} />
+        <Route path="/route-details-report" element={<RouteDetailsReport />} />
         {/* <Route path="/contests" Component={ContestList} />{" "} */}
         <Route path="/add-contest" Component={addEvents} />{' '}
         {/* 👈 Renders at /app/ */}
