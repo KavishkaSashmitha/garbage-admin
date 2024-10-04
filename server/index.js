@@ -1,19 +1,19 @@
-import express from "express";
-import { initializeApp, cert } from "firebase-admin/app";
-import { getFirestore, Timestamp } from "firebase-admin/firestore";
-import multer from "multer";
-import cors from "cors";
-import path from "path";
-import { fileURLToPath } from "url";
-import { v4 as uuidv4 } from "uuid";
-import { Storage } from "@google-cloud/storage";
-import dotenv from "dotenv";
-import serviceAccount from "./servicekry.json" assert { type: "json" };
+import express from 'express';
+import { initializeApp, cert } from 'firebase-admin/app';
+import { getFirestore, Timestamp } from 'firebase-admin/firestore';
+import multer from 'multer';
+import cors from 'cors';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { v4 as uuidv4 } from 'uuid';
+import { Storage } from '@google-cloud/storage';
+import dotenv from 'dotenv';
+import serviceAccount from './servicekry.json' assert { type: 'json' };
 
 dotenv.config(); // Load environment variables from .env file
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 4000;
 app.use(cors());
 
 // Initialize Firebase Admin SDK
@@ -26,7 +26,7 @@ const db = getFirestore(); // Firestore
 
 // Initialize Google Cloud Storage
 const storage = new Storage({
-  keyFilename: path.resolve("./servicekry.json"), // Use path.resolve for better path handling
+  keyFilename: path.resolve('./servicekry.json'), // Use path.resolve for better path handling
 });
 const bucket = storage.bucket(process.env.FIREBASE_STORAGE_BUCKET); // Use environment variable for bucket name
 
@@ -40,14 +40,14 @@ const upload = multer({ storage: storageEngine });
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.get("/", (req, res) => {
-  res.send("Hello");
+app.get('/', (req, res) => {
+  res.send('Hello');
 });
-app.post("/add-route", async (req, res) => {
+app.post('/add-route', async (req, res) => {
   const { truckNumber, routeStart, routeEnd, date } = req.body;
 
   try {
-    const routesCollection = db.collection("routes");
+    const routesCollection = db.collection('routes');
 
     const newRoute = await routesCollection.add({
       truckNumber: truckNumber,
@@ -57,91 +57,91 @@ app.post("/add-route", async (req, res) => {
     });
 
     res.status(201).json({
-      message: "Route added successfully",
+      message: 'Route added successfully',
       routeId: newRoute.id,
     });
   } catch (e) {
-    console.error("Error adding route: ", e);
-    res.status(500).json({ message: "Error adding route", error: e.message });
+    console.error('Error adding route: ', e);
+    res.status(500).json({ message: 'Error adding route', error: e.message });
   }
 });
 
-app.get("/get-routes", async (req, res) => {
+app.get('/get-routes', async (req, res) => {
   try {
-    const routesCollection = db.collection("routes");
-
+    const routesCollection = db.collection('routes');
     const snapshot = await routesCollection.get();
 
     if (snapshot.empty) {
-      return res.status(404).json({ message: "No routes found" });
+      return res.status(404).json({ message: 'No routes found' });
     }
 
+    // Map the documents from the snapshot to a routes array
     const routes = snapshot.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
     }));
 
-    res.status(200).json(routes);
+    res.status(200).json(routes); // Send the routes array in the response
   } catch (e) {
-    console.error("Error fetching routes: ", e);
+    console.error('Error fetching routes: ', e);
     res
       .status(500)
-      .json({ message: "Error fetching routes", error: e.message });
+      .json({ message: 'Error fetching routes', error: e.message });
   }
 });
 
-app.get("/verify/:userId", async (req, res) => {
-  console.log("Request received for:", req.params.userId); // Log userId
+app.get('/verify/:userId', async (req, res) => {
+  console.log('Request received for:', req.params.userId); // Log userId
 
   try {
     const userId = decodeURIComponent(req.params.userId); // Decode the URL-encoded string
 
     if (!userId) {
-      return res.status(400).send("Invalid QR code: userId is empty");
+      return res.status(400).send('Invalid QR code: userId is empty');
     }
 
-    const userRef = db.collection("users").doc(userId);
+    const userRef = db.collection('users').doc(userId);
     const userDoc = await userRef.get();
     const userData = userDoc.data();
 
     if (!userData) {
-      return res.status(404).send("User not found");
+      return res.status(404).send('User not found');
     }
 
     res.redirect(`/user/${userId}`);
   } catch (error) {
-    console.error("Error processing QR code:", error);
-    res.status(400).send("Invalid QR code");
+    console.error('Error processing QR code:', error);
+    res.status(400).send('Invalid QR code');
   }
 });
 
-app.get("/user/:userId", async (req, res) => {
+app.get('/user/:userId', async (req, res) => {
   const userId = req.params.userId;
 
   try {
-    const userRef = db.collection("users").doc(userId);
+    const userRef = db.collection('users').doc(userId);
     const userDoc = await userRef.get();
     const userData = userDoc.data();
 
     if (!userData) {
-      return res.status(404).send("User not found");
+      return res.status(404).send('User not found');
     }
 
     res.send(`Welcome, user ${userId}. User data: ${JSON.stringify(userData)}`);
   } catch (error) {
-    console.error("Error fetching user data:", error);
-    res.status(500).send("Internal Server Error");
+    console.error('Error fetching user data:', error);
+    res.status(500).send('Internal Server Error');
   }
 });
 
 // Route to handle contest data
-app.post("/contests", upload.single("image"), async (req, res) => {
+app.post('/contests', upload.single('image'), async (req, res) => {
   const { name, description, points, expiryDate } = req.body;
   const image = req.file;
 
   if (!name || !description || !points || !expiryDate) {
     return res.status(400).json({
-      error: "Name, description, points, and expiry date are required",
+      error: 'Name, description, points, and expiry date are required',
     });
   }
 
@@ -159,11 +159,11 @@ app.post("/contests", upload.single("image"), async (req, res) => {
           },
         });
 
-        stream.on("error", (err) => {
+        stream.on('error', (err) => {
           reject(err);
         });
 
-        stream.on("finish", () => {
+        stream.on('finish', () => {
           resolve();
         });
 
@@ -174,7 +174,7 @@ app.post("/contests", upload.single("image"), async (req, res) => {
     }
 
     // Store contest data in Firestore
-    await db.collection("contests").add({
+    await db.collection('contests').add({
       name,
       description,
       points: parseInt(points, 10), // Ensure points is an integer
@@ -183,20 +183,20 @@ app.post("/contests", upload.single("image"), async (req, res) => {
       createdAt: Timestamp.now(),
     });
 
-    res.status(200).json({ message: "Contest added successfully!" });
+    res.status(200).json({ message: 'Contest added successfully!' });
   } catch (error) {
-    console.error("Error adding contest:", error);
-    res.status(500).json({ error: "Failed to add contest" });
+    console.error('Error adding contest:', error);
+    res.status(500).json({ error: 'Failed to add contest' });
   }
 });
 
 // Get all contests
-app.get("/contests", async (req, res) => {
+app.get('/contests', async (req, res) => {
   try {
-    const contestsRef = db.collection("contests");
+    const contestsRef = db.collection('contests');
     const snapshot = await contestsRef.get();
     if (snapshot.empty) {
-      return res.status(404).json({ message: "No contests found" });
+      return res.status(404).json({ message: 'No contests found' });
     }
 
     const contests = snapshot.docs.map((doc) => ({
@@ -205,8 +205,132 @@ app.get("/contests", async (req, res) => {
     }));
     res.json(contests);
   } catch (error) {
-    console.error("Error fetching contests:", error);
-    res.status(500).json({ error: "Failed to fetch contests" });
+    console.error('Error fetching contests:', error);
+    res.status(500).json({ error: 'Failed to fetch contests' });
+  }
+});
+app.put('/contests/:id', async (req, res) => {
+  const { id } = req.params;
+  const { name, description, points, expiryDate, imageUrl } = req.body;
+
+  try {
+    const contestRef = db.collection('contests').doc(id);
+    const contestDoc = await contestRef.get();
+
+    if (!contestDoc.exists) {
+      return res.status(404).json({ message: 'Contest not found' });
+    }
+
+    // Parse expiryDate if provided
+    let parsedExpiryDate = expiryDate ? new Date(expiryDate) : null;
+
+    // Check if the parsed expiry date is valid
+    if (parsedExpiryDate && isNaN(parsedExpiryDate.getTime())) {
+      return res.status(400).json({ message: 'Invalid expiry date format' });
+    }
+
+    // Update the contest in Firestore
+    await contestRef.update({
+      name: name || contestDoc.data().name, // Keep the existing value if not provided
+      description: description || contestDoc.data().description,
+      points: points ? parseInt(points, 10) : contestDoc.data().points,
+      expiryDate: parsedExpiryDate
+        ? Timestamp.fromDate(parsedExpiryDate)
+        : contestDoc.data().expiryDate, // Use the parsed date or keep existing
+      imageUrl: imageUrl || contestDoc.data().imageUrl,
+    });
+
+    const updatedContest = await contestRef.get(); // Fetch the updated document
+    res.json({
+      message: 'Contest updated successfully',
+      contest: updatedContest.data(),
+    });
+  } catch (error) {
+    console.error('Error updating contest:', error);
+    res
+      .status(500)
+      .json({ message: 'Error updating contest', error: error.message });
+  }
+});
+
+app.delete('/contests/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const contestRef = db.collection('contests').doc(id);
+    const contestDoc = await contestRef.get();
+
+    if (!contestDoc.exists) {
+      return res.status(404).send('Contest not found');
+    }
+
+    await contestRef.delete();
+    res.send('Contest deleted successfully');
+  } catch (err) {
+    console.error('Error deleting contest:', err);
+    res.status(500).send('Error deleting contest');
+  }
+});
+app.get('/get-users', async (req, res) => {
+  try {
+    const usersCollection = db.collection('users');
+    const snapshot = await usersCollection.get();
+
+    if (snapshot.empty) {
+      return res.status(404).json({ message: 'No users found' });
+    }
+
+    const users = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    res.status(200).json(users);
+  } catch (e) {
+    console.error('Error fetching users: ', e);
+    res.status(500).json({ message: 'Error fetching users', error: e.message });
+  }
+});
+app.put('/update-route/:id', async (req, res) => {
+  const { id } = req.params;
+  const { truckNumber, routeStart, routeEnd, date } = req.body;
+
+  try {
+    const routeRef = db.collection('routes').doc(id);
+    const routeDoc = await routeRef.get();
+
+    if (!routeDoc.exists) {
+      return res.status(404).json({ message: 'Route not found' });
+    }
+
+    await routeRef.update({
+      truckNumber,
+      routeStart,
+      routeEnd,
+      date: Timestamp.fromDate(new Date(date)),
+    });
+
+    res.status(200).send('Route updated successfully');
+  } catch (error) {
+    console.error('Error updating route:', error);
+    res.status(500).send('Error updating route: ' + error.message);
+  }
+});
+
+app.delete('/delete-route/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const routeRef = db.collection('routes').doc(id);
+    const routeDoc = await routeRef.get();
+
+    if (!routeDoc.exists) {
+      return res.status(404).send('Route not found');
+    }
+
+    await routeRef.delete();
+    res.status(200).send('Route deleted successfully');
+  } catch (error) {
+    console.error('Error deleting route:', error);
+    res.status(500).send('Error deleting route: ' + error.message);
   }
 });
 
